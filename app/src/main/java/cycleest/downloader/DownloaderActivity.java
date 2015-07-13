@@ -3,6 +3,7 @@ package cycleest.downloader;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -26,7 +27,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
 
-public class ActivityDownloader extends Activity implements LoaderManager.LoaderCallbacks{
+public class DownloaderActivity extends Activity implements LoaderManager.LoaderCallbacks{
 
     private final int loader = 0;
     private String dir = Environment.getExternalStorageDirectory().getPath();
@@ -43,15 +44,17 @@ public class ActivityDownloader extends Activity implements LoaderManager.Loader
                 if (getLoaderManager().getLoader(loader) != null) {
                     Intent intent = new Intent();
                     intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.parse("file://" + "/storage/emulated/0/testimage.jpg"), "image/*");
+                    intent.setDataAndType(Uri.parse("file://" + dir + "/testimage.jpg"), "image/*");
                     List<ResolveInfo> allHandlers = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
-                    String name = allHandlers.get(0).activityInfo.name;
-                    String pack = allHandlers.get(0).activityInfo.packageName;
+                    String name = allHandlers.get(2).activityInfo.name;
+                    String pack = allHandlers.get(2).activityInfo.packageName;
                     intent.setClassName(pack, name);
+                    startActivityForResult(new Intent(Intent.ACTION_VIEW, Uri.parse("file://" + dir + "/testimage.jpg", "image/*")), 1);
+                    );
                     startActivity(intent);
                 } else {
                     findViewById(R.id.button).setEnabled(false);
-                    getLoaderManager().initLoader(loader, null, ActivityDownloader.this);
+                    getLoaderManager().initLoader(loader, null, DownloaderActivity.this);
                     getLoaderManager().getLoader(loader).forceLoad();
                     findViewById(R.id.progressBar).setVisibility(ProgressBar.VISIBLE);
                 }
@@ -73,7 +76,7 @@ public class ActivityDownloader extends Activity implements LoaderManager.Loader
                     int fileLength = connection.getContentLength();
 
                     String filepath = Environment.getExternalStorageDirectory().getPath();
-                    Log.d("dir", Environment.getExternalStorageDirectory().getPath());
+                    Log.d("dir", Environment.getDataDirectory().getPath());
 
                     InputStream input = new BufferedInputStream(connection.getInputStream());
 
@@ -112,5 +115,55 @@ public class ActivityDownloader extends Activity implements LoaderManager.Loader
     @Override
     public void onLoaderReset(Loader loader) {
 
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode,
+                                                Intent data) {
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                startActivity(new Intent(Intent.ACTION_VIEW, data));
+            }
+        }
+    }
+
+}
+
+class ImgLoader extends AsyncTaskLoader{
+    public ImgLoader(Context context) {
+        super(context);
+    }
+
+    @Override
+    public Object loadInBackground() {
+        try {
+            URL url = new URL(super.getContext().getResources().getString(R.string.URL2));
+            URLConnection connection = url.openConnection();
+            connection.connect();
+            int fileLength = connection.getContentLength();
+
+            String filepath = Environment.getExternalStorageDirectory().getPath();
+            Log.d("dir", Environment.getDataDirectory().getPath());
+
+            InputStream input = new BufferedInputStream(connection.getInputStream());
+
+            OutputStream output = new FileOutputStream(filepath + "/" + "testimage.jpg");
+
+            byte data[] = new byte[fileLength > 0 ? fileLength/100 : 1024];
+            long total = 0;
+            int count;
+            while ((count = input.read(data)) != -1) {
+                total += count;
+                //((ProgressBar) super.getContext().findViewById(R.id.progressBar)).setProgress((int) (total * 100 / fileLength));
+                //Thread.sleep(10);
+                output.write(data, 0, count);
+            }
+            output.flush();
+            output.close();
+            input.close();
+        } catch (Exception e) {
+            Log.e("happens", "smth");
+            e.printStackTrace();
+        }
+        return null;
     }
 }
