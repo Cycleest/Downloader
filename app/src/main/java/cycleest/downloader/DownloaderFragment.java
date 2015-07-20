@@ -2,6 +2,8 @@ package cycleest.downloader;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -26,6 +28,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
     private final int LOADER_ID = 0;
 
     private int progress = 0;
+    private BroadcastReceiver receiver;
 
 
     @Override
@@ -48,6 +51,16 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                onProgressUpdate();
+            }
+        };
+    }
+
+    private void onProgressUpdate(){
+        
     }
 
     @Override

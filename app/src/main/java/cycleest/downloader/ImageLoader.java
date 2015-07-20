@@ -34,7 +34,7 @@ public class ImageLoader extends AsyncTaskLoader {
             Log.d("dir", Environment.getDataDirectory().getPath());
 
             InputStream input = new BufferedInputStream(connection.getInputStream());
-            
+
             OutputStream output = super.getContext().openFileOutput("testimage.jpg", Context.MODE_PRIVATE);
 
             byte data[] = new byte[fileLength > 0 ? fileLength / 100 : 1024];
