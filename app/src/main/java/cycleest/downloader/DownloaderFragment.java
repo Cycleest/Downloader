@@ -10,6 +10,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         getView().findViewById(R.id.button).setEnabled(true);
         File mydir = getActivity().getFilesDir();
         File fileWithinMyDir = new File(mydir, "testimage.jpg");
+        Log.d("filepath", fileWithinMyDir.getPath());
         ((ImageView) getView().findViewById(R.id.imageView)).setImageDrawable(Drawable.createFromPath(fileWithinMyDir.getPath()));
     }
 
