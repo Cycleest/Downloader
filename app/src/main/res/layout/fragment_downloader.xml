@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -10,33 +11,33 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
         android:text="@string/title"
-        android:textSize="@dimen/activity_title_text_size"
-        android:layout_centerHorizontal="true"/>
+        android:textSize="@dimen/activity_title_text_size" />
 
     <TextView
         android:id="@+id/statusLabel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/title"
-        android:text="@string/idle"
-        android:textSize="@dimen/activity_status_text_size"
+        android:layout_marginBottom="@dimen/activity_status_margin_bottom"
         android:layout_marginTop="@dimen/activity_status_margin_top"
-        android:layout_marginBottom="@dimen/activity_status_margin_bottom"/>
+        android:text="@string/idle"
+        android:textSize="@dimen/activity_status_text_size" />
 
     <ProgressBar
-        style="?android:attr/progressBarStyleHorizontal"
         android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/statusLabel" />
 
     <ImageView
+        android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/imageView"
         android:layout_below="@+id/progressBar"
-        android:layout_centerHorizontal="true"/>
+        android:layout_centerHorizontal="true" />
 
     <Button
         android:id="@+id/button"
@@ -45,5 +46,6 @@
         android:layout_alignParentBottom="true"
         android:text="@string/download"
         android:textSize="@dimen/activity_button_text_size" />
+
 
 </RelativeLayout>
