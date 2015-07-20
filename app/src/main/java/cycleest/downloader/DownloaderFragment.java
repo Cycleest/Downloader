@@ -20,10 +20,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+
 import java.io.File;
 import java.util.List;
 
-public class DownloaderFragment extends Fragment implements LoaderManager.LoaderCallbacks, View.OnClickListener{
+public class DownloaderFragment extends Fragment implements LoaderManager.LoaderCallbacks, View.OnClickListener {
 
     private final int LOADER_ID = 0;
 
@@ -34,22 +35,20 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-
         View rootView = inflater.inflate(R.layout.fragment_downloader, container, false);
         ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(ProgressBar.INVISIBLE);
-
-
         Button button = (Button) rootView.findViewById(R.id.button);
         button.setOnClickListener((View.OnClickListener) this);
         ImageView img = (ImageView) rootView.findViewById(R.id.imageView);
-
+        Log.d("TAAG", "onCreateView");
         return rootView;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d("TAAG", "onCreate");
         setRetainInstance(true);
         receiver = new BroadcastReceiver() {
             @Override
@@ -59,12 +58,13 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         };
     }
 
-    private void onProgressUpdate(){
+    private void onProgressUpdate() {
         
     }
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
+        Log.d("TAAG", "onCreateLoader");
         return new ImageLoader(getActivity());
     }
 
@@ -77,6 +77,8 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         File fileWithinMyDir = new File(mydir, "testimage.jpg");
         Log.d("filepath", fileWithinMyDir.getPath());
         ((ImageView) getView().findViewById(R.id.imageView)).setImageDrawable(Drawable.createFromPath(fileWithinMyDir.getPath()));
+        Log.d("TAAG", "onLoadFinished");
+
     }
 
     @Override
@@ -86,6 +88,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onClick(View v) {
+        Log.d("TAAG", "onClick");
         if (getLoaderManager().getLoader(LOADER_ID) != null) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_PICK);
@@ -107,5 +110,6 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
             getLoaderManager().getLoader(LOADER_ID).forceLoad();
             getView().findViewById(R.id.progressBar).setVisibility(ProgressBar.VISIBLE);
         }
+
     }
 }
