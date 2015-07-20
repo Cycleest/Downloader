@@ -8,6 +8,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -33,8 +34,8 @@ public class ImageLoader extends AsyncTaskLoader {
             Log.d("dir", Environment.getDataDirectory().getPath());
 
             InputStream input = new BufferedInputStream(connection.getInputStream());
-
-            OutputStream output = super.getContext().openFileOutput(filepath + "/" + "testimage.jpg", Context.MODE_PRIVATE);
+            
+            OutputStream output = super.getContext().openFileOutput("testimage.jpg", Context.MODE_PRIVATE);
 
             byte data[] = new byte[fileLength > 0 ? fileLength / 100 : 1024];
             long total = 0;

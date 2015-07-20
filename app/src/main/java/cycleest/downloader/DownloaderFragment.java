@@ -61,6 +61,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         getView().findViewById(R.id.button).setEnabled(true);
         File mydir = getActivity().getFilesDir();
         File fileWithinMyDir = new File(mydir, "testimage.jpg");
+        Log.d("filepath", fileWithinMyDir.getPath());
         ((ImageView) getView().findViewById(R.id.imageView)).setImageDrawable(Drawable.createFromPath(fileWithinMyDir.getPath()));
         Log.d("TAAG", "onLoadFinished");
 
