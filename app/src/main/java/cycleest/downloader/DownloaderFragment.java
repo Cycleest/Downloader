@@ -1,9 +1,7 @@
 package cycleest.downloader;
 
 import android.app.Fragment;
-import android.app.FragmentManager;
 import android.app.LoaderManager;
-import android.content.AsyncTaskLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.pm.PackageManager;
@@ -12,7 +10,6 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,13 +17,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.List;
 
 public class DownloaderFragment extends Fragment implements LoaderManager.LoaderCallbacks, View.OnClickListener{
@@ -39,16 +30,6 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        //Fragment f;
-        //View rootView = null;
-        //if (getFragmentManager() != null) {
-            /*if ((f = getFragmentManager().findFragmentByTag("DownloaderFragment")) != null) {
-                return f.getView();
-            }*/
-        //        rootView = f.getView();
-        //        return rootView;
-        //    }
-        //}
 
         View rootView = inflater.inflate(R.layout.fragment_downloader, container, false);
         ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
@@ -70,39 +51,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        return new AsyncTaskLoader(getActivity()) {
-
-            @Override
-            public Object loadInBackground() {
-                try {
-                    URL url = new URL(getResources().getString(R.string.URL2));
-                    URLConnection connection = url.openConnection();
-                    connection.connect();
-                    int fileLength = connection.getContentLength();
-                    InputStream input = new BufferedInputStream(connection.getInputStream());
-                    File mydir = getContext().getFilesDir();
-                    File fileWithinMyDir = new File(mydir, "testimage.jpg");
-                    Log.d("uri", fileWithinMyDir.getPath());
-                    FileOutputStream output = new FileOutputStream(fileWithinMyDir);
-                    byte data[] = new byte[fileLength > 0 ? fileLength / 100 : 1024];
-                    long total = 0;
-                    int count;
-                    while ((count = input.read(data)) != -1) {
-                        total += count;
-                        ((ProgressBar) getView().findViewById(R.id.progressBar)).setProgress((int) (total * 100 / fileLength));
-                        //Thread.sleep(100);
-                        output.write(data, 0, count);
-                    }
-                    output.flush();
-                    output.close();
-                    input.close();
-                } catch (Exception e) {
-                    Log.e("happens", "smth");
-                    e.printStackTrace();
-                }
-                return null;
-            }
-        };
+        return new ImageLoader(getActivity());
     }
 
     @Override
@@ -113,8 +62,6 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         File mydir = getActivity().getFilesDir();
         File fileWithinMyDir = new File(mydir, "testimage.jpg");
         ((ImageView) getView().findViewById(R.id.imageView)).setImageDrawable(Drawable.createFromPath(fileWithinMyDir.getPath()));
-
-
     }
 
     @Override
