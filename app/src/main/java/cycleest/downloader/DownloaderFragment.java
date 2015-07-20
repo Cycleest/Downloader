@@ -37,7 +37,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
 
 
         Button button = (Button) rootView.findViewById(R.id.button);
-        button.setOnClickListener((View.OnClickListener) getActivity());
+        button.setOnClickListener((View.OnClickListener) this);
         ImageView img = (ImageView) rootView.findViewById(R.id.imageView);
 
         return rootView;
