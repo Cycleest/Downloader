@@ -50,7 +50,7 @@ public class ImageLoader extends AsyncTaskLoader {
                 total += count;
                 progressNotifier.putExtra("cycleest.downloader.progress_amount", (int) (total * 100 / fileLength));
                 broadcastManager.sendBroadcast(progressNotifier);
-                Thread.sleep(100);
+                Thread.sleep(30);
                 output.write(data, 0, count);
             }
             output.flush();

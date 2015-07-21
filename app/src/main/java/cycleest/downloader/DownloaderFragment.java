@@ -5,6 +5,7 @@ import android.app.LoaderManager;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -12,6 +13,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.FileProvider;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,21 +34,22 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
 
     private final static int LOADER_ID = 0;
 
-    //private ProgressBar progressBar;
+    private ProgressBar progressBar;
     private int currentState;
     private int currentProgress;
     private String imagePathInFilesystem;
 
     private BroadcastReceiver receiver;
 
+    public static final String DOWNLOAD_PROGRESS_UPDATED = "cycleest.downloader.action.DOWNLOAD_PROGRESS_UPDATED";
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_downloader, container, false);
-        //progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-
-
+        progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
         ImageView img = (ImageView) rootView.findViewById(R.id.imageView);
         Log.d("TAAG", "onCreateView");
 
@@ -73,6 +76,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
             case STATE_DOWNLOADED:
                 statusLabel.setText(getResources().getString(R.string.downloaded));
                 break;
+
         }
     }
 
@@ -84,7 +88,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         receiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                onProgressUpdate();
+                onProgressUpdate(intent);
             }
         };
         currentState = STATE_IDLE;
@@ -93,9 +97,10 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         imagePathInFilesystem = new File(mydir, "testimage.jpg").getPath();
     }
 
-    private void onProgressUpdate() {
-
+    private void onProgressUpdate(Intent intent) {
+        progressBar.setProgress(intent.getIntExtra("cycleest.downloader.progress_amount", 0));
     }
+
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
@@ -145,6 +150,18 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
             getLoaderManager().getLoader(LOADER_ID).forceLoad();
             getView().findViewById(R.id.progressBar).setVisibility(ProgressBar.VISIBLE);
         }
+    }
 
+    @Override
+    public void onResume() {
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(receiver,
+                new IntentFilter(DOWNLOAD_PROGRESS_UPDATED));
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(receiver);
+        super.onPause();
     }
 }
