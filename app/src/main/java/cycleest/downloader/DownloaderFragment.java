@@ -49,10 +49,8 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_downloader, container, false);
         progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
-        ImageView img = (ImageView) rootView.findViewById(R.id.imageView);
         Log.d("TAAG", "onCreateView");
-
+        Log.d("TAAG", String.valueOf(currentState));
         return rootView;
     }
 
@@ -60,9 +58,10 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+
         Button button = (Button) view.findViewById(R.id.button);
         button.setOnClickListener((View.OnClickListener) this);
-        ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        //ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
         TextView statusLabel = (TextView) view.findViewById(R.id.statusLabel);
         switch (currentState) {
             case STATE_IDLE:
@@ -71,19 +70,26 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
             case STATE_DOWNLOADING:
                 statusLabel.setText(getResources().getString(R.string.downloading));
                 progressBar.setVisibility(View.VISIBLE);
-                progressBar.setProgress(currentProgress);
+                progressBar.setProgress(currentState);
+                button.setEnabled(false);
                 break;
             case STATE_DOWNLOADED:
                 statusLabel.setText(getResources().getString(R.string.downloaded));
+                ((ImageView) view.findViewById(R.id.imageView)).setImageDrawable(Drawable.createFromPath(imagePathInFilesystem));
+                button.setText(getResources().getString(R.string.open));
                 break;
-
+        }
+        Log.d("TAAG", "onCreateView");
+        Log.d("TAAG", String.valueOf(currentState));
+        if(getLoaderManager().getLoader(LOADER_ID) != null){
+            getLoaderManager().initLoader(LOADER_ID, null, this);
         }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d("TAAG", "onCreate");
+
         setRetainInstance(true);
         receiver = new BroadcastReceiver() {
             @Override
@@ -95,16 +101,23 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         currentProgress = 0;
         File mydir = getActivity().getFilesDir();
         imagePathInFilesystem = new File(mydir, "testimage.jpg").getPath();
+        Log.d("TAAG", "onCreate");
+        Log.d("TAAG", String.valueOf(currentState));
     }
 
     private void onProgressUpdate(Intent intent) {
-        progressBar.setProgress(intent.getIntExtra("cycleest.downloader.progress_amount", 0));
+        currentProgress = intent.getIntExtra("cycleest.downloader.progress_amount", 0);
+        progressBar.setProgress(currentProgress);
     }
 
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
+
+        currentState = STATE_DOWNLOADING;
+        ((TextView) getView().findViewById(R.id.statusLabel)).setText(getResources().getString(R.string.downloading));
         Log.d("TAAG", "onCreateLoader");
+        Log.d("TAAG", String.valueOf(currentState));
         return new ImageLoader(getActivity());
     }
 
@@ -117,8 +130,10 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
         File fileWithinMyDir = new File(mydir, "testimage.jpg");
         Log.d("filepath", fileWithinMyDir.getPath());
         ((ImageView) getView().findViewById(R.id.imageView)).setImageDrawable(Drawable.createFromPath(fileWithinMyDir.getPath()));
-        Log.d("TAAG", "onLoadFinished");
 
+        currentState = STATE_DOWNLOADED;
+        Log.d("TAAG", "onLoadFinished");
+        Log.d("TAAG", String.valueOf(currentState));
     }
 
     @Override
@@ -128,7 +143,7 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onClick(View v) {
-        Log.d("TAAG", "onClick");
+
         if (getLoaderManager().getLoader(LOADER_ID) != null) {
             Intent intent = new Intent();
             intent.setAction(Intent.ACTION_PICK);
@@ -150,6 +165,8 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
             getLoaderManager().getLoader(LOADER_ID).forceLoad();
             getView().findViewById(R.id.progressBar).setVisibility(ProgressBar.VISIBLE);
         }
+        Log.d("TAAG", "onClick");
+        Log.d("TAAG", String.valueOf(currentState));
     }
 
     @Override
