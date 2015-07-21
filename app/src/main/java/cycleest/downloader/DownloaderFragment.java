@@ -26,9 +26,17 @@ import java.util.List;
 
 public class DownloaderFragment extends Fragment implements LoaderManager.LoaderCallbacks, View.OnClickListener {
 
-    private final int LOADER_ID = 0;
+    public final static int STATE_IDLE = 0;
+    public final static int STATE_DOWNLOADING = 1;
+    public final static int STATE_DOWNLOADED = 2;
 
-    private int progress = 0;
+    private final static int LOADER_ID = 0;
+
+    //private ProgressBar progressBar;
+    private int currentState;
+    private int currentProgress;
+    private String imagePathInFilesystem;
+
     private BroadcastReceiver receiver;
 
 
@@ -36,13 +44,36 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View rootView = inflater.inflate(R.layout.fragment_downloader, container, false);
-        ProgressBar progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
-        progressBar.setVisibility(ProgressBar.INVISIBLE);
-        Button button = (Button) rootView.findViewById(R.id.button);
-        button.setOnClickListener((View.OnClickListener) this);
+        //progressBar = (ProgressBar) rootView.findViewById(R.id.progressBar);
+
+
         ImageView img = (ImageView) rootView.findViewById(R.id.imageView);
         Log.d("TAAG", "onCreateView");
+
         return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Button button = (Button) view.findViewById(R.id.button);
+        button.setOnClickListener((View.OnClickListener) this);
+        ProgressBar progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+        TextView statusLabel = (TextView) view.findViewById(R.id.statusLabel);
+        switch (currentState) {
+            case STATE_IDLE:
+                progressBar.setVisibility(ProgressBar.INVISIBLE);
+                break;
+            case STATE_DOWNLOADING:
+                statusLabel.setText(getResources().getString(R.string.downloading));
+                progressBar.setVisibility(View.VISIBLE);
+                progressBar.setProgress(currentProgress);
+                break;
+            case STATE_DOWNLOADED:
+                statusLabel.setText(getResources().getString(R.string.downloaded));
+                break;
+        }
     }
 
     @Override
@@ -56,10 +87,14 @@ public class DownloaderFragment extends Fragment implements LoaderManager.Loader
                 onProgressUpdate();
             }
         };
+        currentState = STATE_IDLE;
+        currentProgress = 0;
+        File mydir = getActivity().getFilesDir();
+        imagePathInFilesystem = new File(mydir, "testimage.jpg").getPath();
     }
 
     private void onProgressUpdate() {
-        
+
     }
 
     @Override

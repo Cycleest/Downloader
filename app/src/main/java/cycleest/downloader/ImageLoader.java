@@ -28,7 +28,7 @@ public class ImageLoader extends AsyncTaskLoader {
             URL url = new URL(super.getContext().getResources().getString(R.string.URL2));
             URLConnection connection = url.openConnection();
             connection.connect();
-            int fileLength = connection.getContentLength();
+
 
             String filepath = super.getContext().getFilesDir().getPath();
             Log.d("dir", Environment.getDataDirectory().getPath());
@@ -36,6 +36,8 @@ public class ImageLoader extends AsyncTaskLoader {
             InputStream input = new BufferedInputStream(connection.getInputStream());
 
             OutputStream output = super.getContext().openFileOutput("testimage.jpg", Context.MODE_PRIVATE);
+
+            int fileLength = connection.getContentLength();
 
             byte data[] = new byte[fileLength > 0 ? fileLength / 100 : 1024];
             long total = 0;
