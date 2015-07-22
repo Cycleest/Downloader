@@ -12,4 +12,6 @@
     <string name="URL">https://im3-tub-ru.yandex.net/i?id=be51442764e5f20245e882454af95672&amp;n=33&amp;h=170</string>
     <string name="URL2">http://s41.radikal.ru/i094/1304/6d/bde8bc712240.jpg</string>
 
+    <string name="failed_to_download">download failed, you can try again</string>
+
 </resources>
